@@ -25,8 +25,8 @@ class ListingIPAddress
     public function __construct()
     {
         //Do your magic here
-        $this->listIps = \Config::get('handle-ip-address.list_ip', []);
-        $this->behavior = \Config::get('handle-ip-address.behavior', 'blacklist');
+        $this->listIps = \Config::get('listing-ip-address.list_ip', []);
+        $this->behavior = \Config::get('listing-ip-address.behavior', 'blacklist');
     }
 
     /**
