@@ -20,7 +20,7 @@ class ListingIPAddressServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot()
+    public function boot(Router $router)
     {
         /*
          * Optional methods to load your package assets
