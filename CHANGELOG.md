@@ -1,7 +1,7 @@
 # Changelog
 
-All notable changes to `listing ip address` will be documented in this file
+All notable changes to `listing-ip-address` will be documented in this file
 
-## 1.0.0 - 201X-XX-XX
+## 1.0.0 - 2022-10-14
 
 - initial release
