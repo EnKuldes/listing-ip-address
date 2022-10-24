@@ -1,12 +1,16 @@
+# name of github action
 name: run-tests
 
+# Event happen on
 on:
     push:
         branches: [master]
     pull_request:
         branches: [master]
 
+# List of Jobs
 jobs:
+    # Test Job on several matrix
     test:
         runs-on: ${{ matrix.os }}
         strategy:
@@ -14,10 +18,10 @@ jobs:
             matrix:
                 os: [ubuntu-latest, windows-latest]
                 php: [7.4, 8.0]
-                laravel: [8.*]
+                laravel: [^7.*]
                 stability: [prefer-lowest, prefer-stable]
                 include:
-                    - laravel: 8.*
+                    - laravel: ^7.*
                       testbench: ^6.6
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
@@ -43,3 +47,48 @@ jobs:
                   composer update --${{ matrix.stability }} --prefer-dist --no-interaction
             - name: Execute tests
               run: vendor/bin/phpunit
+    # Pre Release the Code with tag latest version
+    pre-release:
+      name: "Pre Release"
+      needs: [test]
+      runs-on: [ubuntu-latest, windows-latest]
+      steps:
+        - uses: "marvinpinto/action-automatic-releases@latest"
+          with:
+            repo_token: "${{ secrets.GITHUB_TOKEN }}"
+            automatic_release_tag: "latest"
+            prerelease: true
+            title: "Development Build"
+    # Make a link for release tags
+    semantic-version:
+      name: "Semantic Versioning"
+      needs: [pre-release]
+      runs-on: [ubuntu-latest, windows-latest]
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v2
+            with:
+              fetch-depth: 0
+          - name: "Git Semantic Versioning"
+            uses: PaulHatch/semantic-version@v5.0.0-alpha2
+            with:
+              # The prefix to use to identify tags
+              tag_prefix: "v"
+              # A string which, if present in a git commit, indicates that a change represents a
+              # major (breaking) change, supports regular expressions wrapped with '/'
+              major_pattern: "(MAJOR)"
+              # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
+              minor_pattern: "(MINOR)"
+              # A string to determine the format of the version output
+              version_format: "${major}.${minor}.${patch}-prerelease${increment}"
+              # Optional path to check for changes. If any changes are detected in the path the
+              # 'changed' output will true. Enter multiple paths separated by spaces.
+              # change_path: "src/my-service"
+              # Named version, will be used as suffix for name version tag
+              namespace: lip
+              # If this is set to true, *every* commit will be treated as a new version.
+              bump_each_commit: false
+              # If true, the body of commits will also be searched for major/minor patterns to determine the version type.
+              search_commit_body: false
+              # The output method used to generate list of users, 'csv' or 'json'.
+              user_format_type: "json"
