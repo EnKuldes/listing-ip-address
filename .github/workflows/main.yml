@@ -1,17 +1,14 @@
 # name of github action
 name: run-tests
 
-# Event happen on
-on:
+on: # Event happen on
     push:
         branches: [master]
     pull_request:
         branches: [master]
 
-# List of Jobs
-jobs:
-    # Test Job on several matrix
-    test:
+jobs: # List of Jobs
+    test: # Test Job on several matrix
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: true
@@ -47,8 +44,7 @@ jobs:
                   composer update --${{ matrix.stability }} --prefer-dist --no-interaction
             - name: Execute tests
               run: vendor/bin/phpunit
-    # Pre Release the Code with tag latest version
-    pre-release:
+    pre-release: # Pre Release the Code with tag latest version
       name: "Pre Release"
       needs: [test]
       runs-on: [ubuntu-latest, windows-latest]
@@ -59,8 +55,7 @@ jobs:
             automatic_release_tag: "latest"
             prerelease: true
             title: "Development Build"
-    # Make a link for release tags
-    semantic-version:
+    semantic-version: # Make a link for release tags
       name: "Semantic Versioning"
       needs: [pre-release]
       runs-on: [ubuntu-latest, windows-latest]
