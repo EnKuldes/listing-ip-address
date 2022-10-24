@@ -1,14 +1,13 @@
-# name of github action
 name: run-tests
 
-on: # Event happen on
+on:
     push:
         branches: [master]
     pull_request:
         branches: [master]
 
-jobs: # List of Jobs
-    test: # Test Job on several matrix
+jobs:
+    test:
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: true
@@ -18,7 +17,7 @@ jobs: # List of Jobs
                 laravel: [8.*]
                 stability: [prefer-lowest, prefer-stable]
                 include:
-                    - laravel: ^8.*
+                    - laravel: 8.*
                       testbench: ^6.6
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
@@ -44,21 +43,26 @@ jobs: # List of Jobs
                   composer update --${{ matrix.stability }} --prefer-dist --no-interaction
             - name: Execute tests
               run: vendor/bin/phpunit
-    pre-release: # Pre Release the Code with tag latest version
+    pre-release:
       name: "Pre Release"
-      needs: [test]
-      runs-on: [ubuntu-latest, windows-latest]
+      runs-on: "ubuntu-latest"
       steps:
+        # ...
+        - name: "Build & test"
+          run: |
+            echo "done!"
         - uses: "marvinpinto/action-automatic-releases@latest"
           with:
             repo_token: "${{ secrets.GITHUB_TOKEN }}"
             automatic_release_tag: "latest"
             prerelease: true
             title: "Development Build"
-    semantic-version: # Make a link for release tags
+            #files: |
+            #  *.jar
+    semver:
       name: "Semantic Versioning"
       needs: [pre-release]
-      runs-on: [ubuntu-latest, windows-latest]
+      runs-on: "ubuntu-latest"
       steps:
           - name: Checkout
             uses: actions/checkout@v2
@@ -80,7 +84,7 @@ jobs: # List of Jobs
               # 'changed' output will true. Enter multiple paths separated by spaces.
               # change_path: "src/my-service"
               # Named version, will be used as suffix for name version tag
-              namespace: lip
+              namespace: npc
               # If this is set to true, *every* commit will be treated as a new version.
               bump_each_commit: false
               # If true, the body of commits will also be searched for major/minor patterns to determine the version type.
