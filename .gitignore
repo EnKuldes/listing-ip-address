@@ -1,0 +1,5 @@
+# Specify filepatterns you want git to ignore.
+/vendor
+composer.phar
+composer.lock
+.phpunit.result*
